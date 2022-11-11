@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+
+    <!-- 全局属性 -->
+    <properties>
+        <property name="pattern">%highlight{[%d{HH:mm:ss}] [%logger/%-5level] %m%n}{ERROR=RED, WARN=Yellow, INFO=Green,
+            DEBUG=Cyan, TRACE=White}
+        </property>
+    </properties>
+
+    <!-- appender -->
+    <Appenders>
+        <!-- 控制台 -->
+        <Console name="console">
+            <!-- 文件输出所有消息 -->
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            <!-- 输出格式 -->
+            <PatternLayout pattern="${pattern}"/>
+        </Console>
+    </Appenders>
+
+    <!-- logger -->
+    <Loggers>
+        <logger name="org.apache.ibatis" additivity="false" level="INFO">
+            <AppenderRef ref="console"/>
+        </logger>
+        <logger name="net.sf.ehcache" additivity="false" level="INFO">
+            <AppenderRef ref="console"/>
+        </logger>
+        <logger name="com.zaxxer.hikari" additivity="false" level="INFO">
+            <AppenderRef ref="console"/>
+        </logger>
+        <!-- mainFile -->
+        <Root level="ALL">
+            <AppenderRef ref="console"/>
+        </Root>
+    </Loggers>
+</Configuration>

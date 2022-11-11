@@ -1,0 +1,6 @@
+.gradle
+.idea
+/*/run
+/*/jar
+/*/build
+!gradle-wrapper.jar

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.e404.bot.mapper.WordMapper">
+    <!--在当前mapper中使用二级缓存-->
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+    <!--初始化表-->
+    <update id="initTable">
+        CREATE TABLE IF NOT EXISTS `word`
+        (
+            `id`       BIGINT UNSIGNED    NOT NULL COMMENT '用户id',
+            `word`     VARCHAR(255)       NOT NULL COMMENT '词',
+            `is_group` BOOLEAN            NOT NULL COMMENT '会话是否是群聊',
+            `count`    MEDIUMINT UNSIGNED NOT NULL COMMENT '出现次数',
+            PRIMARY KEY (`id`, `word`, `is_group`)
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = UTF8;
+    </update>
+
+    <!--插入分词记录-->
+    <insert id="add">
+        INSERT INTO `word`(`id`, `word`, `is_group`, `count`)
+            VALUE (#{id}, #{word}, #{is_group}, 1)
+        ON DUPLICATE KEY
+            UPDATE `count` = `count` + 1;
+    </insert>
+
+    <!--获取top N的数据-->
+    <select id="get" resultType="wordData">
+        SELECT `word`, `count`
+        FROM `word`
+        WHERE `id` = #{id}
+          AND `is_group` = #{is_group}
+        LIMIT #{limit};
+    </select>
+
+    <!--移除记录次数小于10的分词记录-->
+    <delete id="delUseless">
+        DELETE
+        FROM `word`
+        WHERE `count` &lt; 10;
+    </delete>
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <properties>
+        <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/bot?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false&amp;serverTimezone=Asia/Shanghai"/>
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
+    </properties>
+
+    <settings>
+        <!--指定日志实现-->
+        <setting name="logImpl" value="SLF4J"/>
+        <!--自动转换驼峰命名法-->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <!--显式启用全局缓存-->
+        <setting name="cacheEnabled" value="true"/>
+    </settings>
+
+    <typeAliases>
+        <package name="top.e404.bot.pojo"/>
+    </typeAliases>
+
+    <environments default="mysql">
+        <environment id="mysql">
+            <transactionManager type="JDBC"/>
+            <dataSource type="top.e404.bot.HikariDataSourceFactory">
+                <property name="driverClassName" value="${driver}"/>
+                <property name="jdbcUrl" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <mapper resource="mapper/HistoryMapper.xml"/>
+        <mapper resource="mapper/SigninMapper.xml"/>
+        <mapper resource="mapper/UsageMapper.xml"/>
+        <mapper resource="mapper/WordMapper.xml"/>
+    </mappers>
+</configuration>

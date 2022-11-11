@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.e404.bot.mapper.SigninMapper">
+    <!--在当前mapper中使用二级缓存-->
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+    <!--初始化表-->
+    <update id="initTable">
+        CREATE TABLE IF NOT EXISTS `sign_in`
+        (
+            `id`   BIGINT UNSIGNED PRIMARY KEY NOT NULL COMMENT '用户id',
+            `all`  SMALLINT UNSIGNED           NOT NULL COMMENT '总计签到次数',
+            `con`  SMALLINT UNSIGNED           NOT NULL COMMENT '连续签到次数',
+            `date` CHAR(10)                    NOT NULL COMMENT '最后一次签到日期(yyyy.MM.dd)'
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = UTF8;
+    </update>
+
+    <!--获得签到数据-->
+    <select id="get" resultType="SigninData">
+        SELECT *
+        FROM `sign_in`
+        WHERE `id` = #{id};
+    </select>
+
+    <!--获得签到top n-->
+    <select id="getTop" resultType="SigninData">
+        SELECT *
+        FROM `sign_in`
+        ORDER BY `con` DESC
+        LIMIT #{limit};
+    </select>
+
+    <insert id="set">
+        REPLACE INTO `sign_in` VALUE (#{id}, #{all}, #{con}, #{date});
+    </insert>
+</mapper>

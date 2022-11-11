@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.e404.bot.mapper.HistoryMapper">
+    <!--在当前mapper中使用二级缓存-->
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+    <!--初始化表-->
+    <update id="initTable">
+        CREATE TABLE IF NOT EXISTS `history`
+        (
+            `sender`   BIGINT UNSIGNED NOT NULL COMMENT '发送者id',
+            `subject`  BIGINT UNSIGNED NOT NULL COMMENT '会话id',
+            `is_group` BOOLEAN         NOT NULL COMMENT '会话是否是群聊',
+            `ids`      VARCHAR(512)    NOT NULL COMMENT '消息链ids的字符串形式',
+            `stamp`    INT UNSIGNED    NOT NULL COMMENT '发送时间',
+            `chain`    LONGTEXT        NOT NULL COMMENT '消息链序列化后的json',
+            PRIMARY KEY (`sender`, `subject`, `ids`)
+        ) ENGINE = InnoDB
+          DEFAULT CHARSET = UTF8;
+    </update>
+
+    <!--插入聊天记录-->
+    <insert id="add">
+        REPLACE INTO `history`(`sender`, `subject`, `is_group`, `ids`, `stamp`, `chain`)
+            VALUE (${sender}, ${subject}, #{is_group}, #{ids}, ${stamp}, #{chain});
+    </insert>
+
+    <!--通过ids获取消息-->
+    <select id="get" resultType="HistoryData">
+        SELECT *
+        FROM `history`
+        WHERE `subject` = #{subject}
+          AND `is_group` = #{is_group}
+          AND `ids` = #{ids}
+        LIMIT 1;
+    </select>
+
+    <!--获得最新的n条消息-->
+    <select id="getLast" resultType="HistoryData">
+        SELECT *
+        FROM `history`
+        WHERE `sender` = #{sender}
+          AND `subject` = #{subject}
+          AND `is_group` = #{is_group}
+        ORDER BY `stamp` DESC
+        LIMIT #{count};
+    </select>
+
+    <!--移除超时的消息记录-->
+    <delete id="delTimeout">
+        DELETE
+        FROM `history`
+        WHERE `stamp` &lt; #{stamp};
+    </delete>
+</mapper>
